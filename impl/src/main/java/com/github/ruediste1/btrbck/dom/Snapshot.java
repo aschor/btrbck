@@ -5,7 +5,8 @@ import java.util.Comparator;
 import java.util.UUID;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 /**
  * Represents a snapshot of the working directory of a {@link Stream}.
@@ -51,8 +52,11 @@ public class Snapshot {
     }
 
     public String getSnapshotName() {
+        DateTimeFormatter f = DateTimeFormat
+                .forPattern("yyyy-MM-dd HH'h'mm'm'ss'.'SSS's'");
         return String.format("%d_%s", nr,
-                date.toString(ISODateTimeFormat.dateTime()));
+                // date.toString(ISODateTimeFormat.dateTime()));
+                date.toString(f));
     }
 
     @Override
@@ -61,11 +65,16 @@ public class Snapshot {
     }
 
     public static Snapshot parse(Stream stream, String name) {
+        DateTimeFormatter f = DateTimeFormat
+                .forPattern("yyyy-MM-dd HH'h'mm'm'ss'.'SSS's'");
         Snapshot snapshot = new Snapshot();
         snapshot.stream = stream;
         int idx = name.indexOf("_");
-        snapshot.date = ISODateTimeFormat.dateTimeParser().withOffsetParsed()
-                .parseDateTime(name.substring(idx + 1));
+        snapshot.date = f.parseDateTime(name.substring(idx + 1));
+        /*
+         * snapshot.date = ISODateTimeFormat.dateTimeParser().withOffsetParsed()
+         * .parseDateTime(name.substring(idx + 1));
+         */
         snapshot.nr = Integer.parseInt(name.substring(0, idx));
         return snapshot;
     }
